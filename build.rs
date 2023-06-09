@@ -13,7 +13,7 @@ fn main() {
         .collect::<Vec<PathBuf>>();
 
     cxx_build::bridge("src/lib.rs")
-        .file("cld3.cc")
+        .file("cld3_wrapper.cc")
         .files(cxx_files)
         .flag_if_supported("-std=c++17")
         .flag("-Wno-unused-parameter")

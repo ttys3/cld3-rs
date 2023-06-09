@@ -10,7 +10,7 @@ mod ffi {
     }
 
     unsafe extern "C++" {
-        include!("cld3/cld3.h");
+        include!("cld3/cld3_wrapper.h");
 
         pub(crate) type NNetLanguageIdentifier;
 
