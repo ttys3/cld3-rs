@@ -1,5 +1,6 @@
 #pragma once
 #include "rust/cxx.h"
+#include <memory>
 
 #include "cld3/nnet_language_identifier.h"
 
@@ -24,10 +25,12 @@ fail(e.what());
 
 using namespace chrome_lang_id;
 
+struct SharedResult;
+
 std::unique_ptr<NNetLanguageIdentifier> new_language_identifier_default();
 std::unique_ptr<NNetLanguageIdentifier> new_language_identifier(int minNumBytes, int maxNumBytes);
 
-//SharedResult find_language(NNetLanguageIdentifier &li, rust::Str text);
+SharedResult find_language(NNetLanguageIdentifier &li, rust::Str text);
 
-//const std::vector<SharedResult> find_topn_most_freq_langs(NNetLanguageIdentifier &li, char *data, int length, int num_langs, int *out_size);
+rust::Vec<SharedResult> find_topn_most_freq_langs(NNetLanguageIdentifier &li, rust::Str text, int num_langs);
 
