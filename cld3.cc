@@ -1,6 +1,9 @@
 
 #include "cld3.h"
+
+// required for shared struct `SharedResult`
 #include "cld3/src/lib.rs.h"
+
 #include <string>
 #include "cld3/base.h"
 

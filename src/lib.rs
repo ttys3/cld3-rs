@@ -16,11 +16,32 @@ mod ffi {
 
         fn new_language_identifier_default() -> UniquePtr<NNetLanguageIdentifier>;
 
-        fn new_language_identifier(min_num_bytes: i32, max_num_bytes: i32) -> UniquePtr<NNetLanguageIdentifier>;
+        fn new_language_identifier(min_num_bytes: i32, max_num_bytes: i32) -> Result<UniquePtr<NNetLanguageIdentifier>>;
 
         fn find_language(li: Pin<&mut NNetLanguageIdentifier>, text: &str) -> SharedResult;
 
         fn find_topn_most_freq_langs(li: Pin<&mut NNetLanguageIdentifier>, text: &str, num_langs: i32) -> Vec<SharedResult>;
+    }
+}
+
+// warning!!! DO NOT USE `Result` from the cld3 C++ code
+pub type DetectResult = ffi::SharedResult;
+
+pub struct NNetLanguageIdentifier{
+    pub cxxp: cxx::UniquePtr<ffi::NNetLanguageIdentifier>,
+}
+
+impl NNetLanguageIdentifier {
+    pub fn new(min_num_bytes: i32, max_num_bytes: i32) -> Result<Self, cxx::Exception> {
+        Ok(Self { cxxp: ffi::new_language_identifier(min_num_bytes, max_num_bytes)? })
+    }
+
+    pub fn find_language(&mut self, text: &str) -> DetectResult {
+        ffi::find_language(self.cxxp.pin_mut(), text)
+    }
+
+    pub fn find_topn_most_freq_langs(&mut self, text: &str, num_langs: i32) -> Vec<DetectResult> {
+        ffi::find_topn_most_freq_langs(self.cxxp.pin_mut(), text, num_langs)
     }
 }
 
@@ -35,14 +56,18 @@ mod tests {
 
     #[test]
     fn constructor_with_param() {
-        let mut ld = ffi::new_language_identifier(0, 500);
+        let mut ld = ffi::new_language_identifier(0, 500).unwrap();
         let rs = ffi::find_language(ld.pin_mut(), "こんにちは");
+        assert_eq!(rs.language, "ja");
+
+        let mut rustic_ld = NNetLanguageIdentifier::new(0, 500).unwrap();
+        let rs = rustic_ld.find_language("こんにちは");
         assert_eq!(rs.language, "ja");
     }
 
     #[test]
     fn find_language() {
-        let mut ld = ffi::new_language_identifier(0, 500);
+        let mut ld = NNetLanguageIdentifier::new(0, 500).unwrap();
         // multi lang and lang code test cases in format: (text, lang_code)
         let test_cases = vec![
             ("This is English text.", "en"),
@@ -64,7 +89,7 @@ mod tests {
             // ("ciao", "it"),
         ];
         for (text, expected) in test_cases {
-            let rs = ffi::find_language(ld.pin_mut(), text);
+            let rs = ld.find_language(text);
             println!("real: {}, expected: {}", rs.language, expected);
             assert_eq!(rs.language, expected);
         }
@@ -72,7 +97,7 @@ mod tests {
 
     #[test]
     fn find_topn_most_freq_langs() {
-        let mut ld = ffi::new_language_identifier(0, 100);
+        let mut ld = NNetLanguageIdentifier::new(0, 100).unwrap();
         // can't believe cld3 can not detect "Hola, bonjour, ciao" as es, fr, it
         let test_cases = vec![
             ("你好 こんにちは 안녕하세요", vec!["zh", "ja", "ko"]),
@@ -80,7 +105,7 @@ mod tests {
         ];
         for (text, expected_lang_codes) in test_cases {
             // Act
-            let result = ffi::find_topn_most_freq_langs(ld.pin_mut(),text, expected_lang_codes.len() as i32);
+            let result = ld.find_topn_most_freq_langs(text, expected_lang_codes.len() as i32);
 
             // Assert len
             // println!("actual len: {:?}, expected len: {:?}", result.len(), expected_lang_codes.len());
