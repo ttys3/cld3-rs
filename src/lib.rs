@@ -1,7 +1,7 @@
 #[cxx::bridge]
 mod ffi {
 
-    struct SharedResult {
+    pub struct SharedResult {
         language: String,
         probability: f64, // Language probability.
         is_reliable: bool,  // Whether the prediction is reliable.
