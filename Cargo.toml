@@ -3,6 +3,13 @@ name = "cld3"
 version = "0.1.0"
 edition = "2021"
 links = "cxx-cld3"
+license = "Apache License 2.0"
+description = """
+Rust binding for Compact Language Detector v3 (CLD3), a neural network model for language identification.
+the C++ code is from https://github.com/google/cld3
+"""
+documentation = "https://docs.rs/cld3"
+homepage = "https://github.com/ttys3/cld3-rs"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]

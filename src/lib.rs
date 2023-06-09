@@ -51,7 +51,7 @@ mod tests {
 
     #[test]
     fn implicit_constructor() {
-        ffi::new_language_identifier_default();
+        let _ = ffi::new_language_identifier_default();
     }
 
     #[test]
