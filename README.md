@@ -14,7 +14,7 @@ the C++ code is from https://github.com/google/cld3
 `libprotobuf` is required to build this crate.
 
 ```rust
-let mut cld = NNetLanguageIdentifier::new(0, 500).unwrap();
+let mut cld = cld3::NNetLanguageIdentifier::new(0, 500).unwrap();
 let rs = cld.find_language("こんにちは");
 println!("{:?}", rs.language);
 // ja
