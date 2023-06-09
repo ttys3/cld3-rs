@@ -20,7 +20,6 @@ fn main() {
         .flag("-Wno-implicit-fallthrough")
         .compile("cxx-cld3");
 
-    println!("cargo:rustc-link-lib=m");
     println!("cargo:rustc-link-lib=protobuf");
 
     println!("cargo:rerun-if-changed=cld3/cld3.cc");
