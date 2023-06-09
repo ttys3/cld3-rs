@@ -17,7 +17,7 @@ fn main() {
         .files(cxx_files)
         .flag_if_supported("-std=c++17")
         .flag("-Wno-unused-parameter")
-        .flag("-Wno-implicit-fallthroug")
+        .flag("-Wno-implicit-fallthrough")
         .compile("cxx-cld3");
 
     println!("cargo:rustc-link-lib=m");
